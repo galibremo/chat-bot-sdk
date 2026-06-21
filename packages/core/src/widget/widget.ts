@@ -1,6 +1,6 @@
-import type { ChatMessage, ChatbotInitOptions } from '@typetechit/chatbot-types';
+import type { ChatMessage, ChatbotBlockReason, ChatbotInitOptions } from '@typetechit/chatbot-types';
 import { buildStyles } from './styles';
-import { buildMessageEl, buildTypingIndicator, botIcon, chatIcon, closeIcon, newSessionIcon, sendIcon } from './render';
+import { buildMessageEl, botIcon, buildTypingIndicator, chatIcon, closeIcon, fileTextIcon, newSessionIcon, sendIcon, settingsIcon } from './render';
 
 export interface WidgetCallbacks {
   onSend: (text: string) => void;
@@ -116,14 +116,26 @@ export class ChatWidget {
     this.panel.appendChild(footer);
     this.shadow.appendChild(this.panel);
     document.body.appendChild(this.host);
-
-    if (options.welcomeMessage) {
-      this.appendMessage({ type: 'ai', content: options.welcomeMessage });
-    } else {
-      this.showEmptyState(options.chatbotName ?? 'AI Assistant');
-    }
+    this.showInitialLoading();
 
     if (options.autoOpen) this.open();
+  }
+
+  private showInitialLoading(): void {
+    this.messagesContainer.innerHTML = '';
+    this.input.disabled = true;
+    this.sendBtn.disabled = true;
+
+    const el = document.createElement('div');
+    el.className = 'ttcb-initial-loading';
+    el.id = 'ttcb-initial-loading';
+    const spinner = document.createElement('div');
+    spinner.className = 'ttcb-spinner';
+    const text = document.createElement('p');
+    text.textContent = 'Loading…';
+    el.appendChild(spinner);
+    el.appendChild(text);
+    this.messagesContainer.appendChild(el);
   }
 
   private showEmptyState(name: string): void {
@@ -210,6 +222,44 @@ export class ChatWidget {
   toggle(): void {
     if (this.isOpen) this.close();
     else this.open();
+  }
+
+  readyToChat(options: ChatbotInitOptions): void {
+    this.messagesContainer.innerHTML = '';
+    this.input.disabled = false;
+    this.sendBtn.disabled = false;
+    if (options.welcomeMessage) {
+      this.appendMessage({ type: 'ai', content: options.welcomeMessage });
+    } else {
+      this.showEmptyState(options.chatbotName ?? 'AI Assistant');
+    }
+  }
+
+  showBlocked(reason: ChatbotBlockReason): void {
+    this.messagesContainer.innerHTML = '';
+
+    const isNoOrigin = reason === 'no-origin';
+    const blocked = document.createElement('div');
+    blocked.className = 'ttcb-blocked';
+
+    const iconEl = document.createElement('div');
+    iconEl.className = 'ttcb-blocked-icon';
+    iconEl.innerHTML = isNoOrigin ? settingsIcon() : fileTextIcon();
+
+    const title = document.createElement('p');
+    title.className = 'ttcb-blocked-title';
+    title.textContent = isNoOrigin ? 'Chatbot Settings Required' : 'Business Context Required';
+
+    const desc = document.createElement('p');
+    desc.className = 'ttcb-blocked-desc';
+    desc.textContent = isNoOrigin
+      ? 'The chatbot has not been configured yet. Please set it up in the admin panel.'
+      : 'Business context is missing. Please add your business information in the admin panel.';
+
+    blocked.appendChild(iconEl);
+    blocked.appendChild(title);
+    blocked.appendChild(desc);
+    this.messagesContainer.appendChild(blocked);
   }
 
   clearMessages(name: string): void {

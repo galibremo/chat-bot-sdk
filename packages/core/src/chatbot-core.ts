@@ -1,4 +1,5 @@
 import type {
+  ChatbotBlockReason,
   ChatbotEventMap,
   ChatbotInitOptions,
   ChatbotState,
@@ -34,6 +35,8 @@ export class ChatbotCore {
   private _state: ChatbotState = {
     isOpen: false,
     isLoading: false,
+    isReady: false,
+    blockReason: null,
     messages: [],
     sessionId: null,
     error: null,
@@ -68,7 +71,38 @@ export class ChatbotCore {
     // Warm CSRF token eagerly (non-blocking)
     void this.apiClient.warmCsrf();
 
-    await this.loadHistory();
+    const blockReason = await this.checkReadiness();
+    this._state.blockReason = blockReason;
+    this._state.isReady = blockReason === null;
+
+    if (blockReason) {
+      this.widget?.showBlocked(blockReason);
+    } else {
+      this.widget?.readyToChat(this.options);
+      await this.loadHistory();
+    }
+
+    this.emitter.emit('ready');
+  }
+
+  private async checkReadiness(): Promise<ChatbotBlockReason> {
+    try {
+      const [settingsResult, kbResult] = await Promise.allSettled([
+        this.apiClient.fetchSettings(),
+        this.apiClient.fetchKnowledgeBase(),
+      ]);
+
+      const settings = settingsResult.status === 'fulfilled' ? settingsResult.value : null;
+      if (!settings?.origin) return 'no-origin';
+
+      const kb = kbResult.status === 'fulfilled' ? kbResult.value : null;
+      if (!kb?.systemMessage?.trim()) return 'no-prompt';
+
+      return null;
+    } catch {
+      // Network failure — don't block the user, let them try
+      return null;
+    }
   }
 
   async sendMessage(text: string): Promise<void> {
@@ -126,6 +160,7 @@ export class ChatbotCore {
   }
 
   resetSession(): void {
+    if (!this._state.isReady) return;
     const newId = this.session.reset();
     this._state.sessionId = newId;
     this._state.messages = [];

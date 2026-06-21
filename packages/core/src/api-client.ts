@@ -4,6 +4,8 @@ import type {
   ChatMessage,
   ChatRequest,
   ChatResponseData,
+  ChatbotSettingsResponse,
+  KnowledgeBaseResponse,
 } from '@typetechit/chatbot-types';
 
 interface ApiClientOptions {
@@ -131,6 +133,14 @@ export class ApiClient {
 
   async fetchHistory(sessionId: string): Promise<ChatMessage[]> {
     return this.request<ChatMessage[]>('GET', '/n8n/fetch-chat', undefined, { sessionId });
+  }
+
+  async fetchSettings(): Promise<ChatbotSettingsResponse | null> {
+    return this.request<ChatbotSettingsResponse | null>('GET', '/chatbot-settings');
+  }
+
+  async fetchKnowledgeBase(): Promise<KnowledgeBaseResponse | null> {
+    return this.request<KnowledgeBaseResponse | null>('GET', '/knowledge-base');
   }
 
   async warmCsrf(): Promise<void> {

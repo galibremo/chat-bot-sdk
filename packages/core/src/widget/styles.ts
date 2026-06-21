@@ -126,6 +126,36 @@ export function buildStyles(primaryColor: string, theme: 'light' | 'dark' | 'aut
     .ttcb-empty-icon svg { width: 22px; height: 22px; fill: var(--ttcb-text-muted); }
     .ttcb-empty strong { color: var(--ttcb-text); }
 
+    .ttcb-initial-loading {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; flex: 1; padding: 32px 16px;
+      color: var(--ttcb-text-muted); font-size: 13px;
+    }
+    .ttcb-spinner {
+      width: 24px; height: 24px;
+      border: 2px solid var(--ttcb-border);
+      border-top-color: var(--ttcb-text-muted);
+      border-radius: 50%;
+      animation: ttcb-spin 0.7s linear infinite;
+      margin-bottom: 10px;
+    }
+    @keyframes ttcb-spin { to { transform: rotate(360deg); } }
+
+    .ttcb-blocked {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center;
+      padding: 32px 20px; flex: 1;
+    }
+    .ttcb-blocked-icon {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--ttcb-bg-secondary);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+    }
+    .ttcb-blocked-icon svg { width: 20px; height: 20px; fill: var(--ttcb-text-muted); }
+    .ttcb-blocked-title { font-size: 14px; font-weight: 600; color: var(--ttcb-text); margin-bottom: 8px; }
+    .ttcb-blocked-desc { font-size: 12px; color: var(--ttcb-text-muted); line-height: 1.5; max-width: 220px; }
+
     .ttcb-msg { display: flex; gap: 8px; max-width: 100%; }
     .ttcb-msg.human { flex-direction: row-reverse; }
     .ttcb-msg-avatar {

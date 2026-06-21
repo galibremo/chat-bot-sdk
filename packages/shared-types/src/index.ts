@@ -49,6 +49,18 @@ export interface ChatMessage {
   };
 }
 
+// ─── Readiness ────────────────────────────────────────────────────────────────
+
+export type ChatbotBlockReason = 'no-origin' | 'no-prompt' | null;
+
+export interface ChatbotSettingsResponse {
+  origin: string | null;
+}
+
+export interface KnowledgeBaseResponse {
+  systemMessage: string | null;
+}
+
 // ─── Events ───────────────────────────────────────────────────────────────────
 
 export type ChatbotEventMap = {
@@ -57,6 +69,7 @@ export type ChatbotEventMap = {
   close: void;
   error: Error;
   'session-reset': void;
+  ready: void;
 };
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -64,6 +77,8 @@ export type ChatbotEventMap = {
 export interface ChatbotState {
   isOpen: boolean;
   isLoading: boolean;
+  isReady: boolean;
+  blockReason: ChatbotBlockReason;
   messages: ChatMessage[];
   sessionId: string | null;
   error: string | null;

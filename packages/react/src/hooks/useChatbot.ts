@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { ChatMessage, ChatbotState } from '@typetechit/chatbot-types';
+import type { ChatbotBlockReason, ChatMessage, ChatbotState } from '@typetechit/chatbot-types';
 import { useChatbotContext } from '../context';
 
 export interface UseChatbotReturn {
   messages: ChatMessage[];
   isOpen: boolean;
   isLoading: boolean;
+  isReady: boolean;
+  blockReason: ChatbotBlockReason;
   error: string | null;
   sessionId: string | null;
   sendMessage: (text: string) => Promise<void>;
@@ -39,6 +41,9 @@ export function useChatbot(): UseChatbotReturn {
     const offReset = instance.on('session-reset', () => {
       setState({ ...instance.getState() });
     });
+    const offReady = instance.on('ready', () => {
+      setState({ ...instance.getState() });
+    });
 
     return () => {
       offMessage();
@@ -46,6 +51,7 @@ export function useChatbot(): UseChatbotReturn {
       offClose();
       offError();
       offReset();
+      offReady();
     };
   }, [instance]);
 
@@ -62,6 +68,8 @@ export function useChatbot(): UseChatbotReturn {
     messages: state.messages,
     isOpen: state.isOpen,
     isLoading: state.isLoading,
+    isReady: state.isReady,
+    blockReason: state.blockReason,
     error: state.error,
     sessionId: state.sessionId,
     sendMessage,
