@@ -14,6 +14,7 @@ export interface UseChatbotReturn {
   open: () => void;
   close: () => void;
   toggle: () => void;
+  resetSession: () => void;
 }
 
 export function useChatbot(): UseChatbotReturn {
@@ -35,12 +36,16 @@ export function useChatbot(): UseChatbotReturn {
     const offError = instance.on('error', () => {
       setState({ ...instance.getState() });
     });
+    const offReset = instance.on('session-reset', () => {
+      setState({ ...instance.getState() });
+    });
 
     return () => {
       offMessage();
       offOpen();
       offClose();
       offError();
+      offReset();
     };
   }, [instance]);
 
@@ -51,6 +56,7 @@ export function useChatbot(): UseChatbotReturn {
   const open = useCallback(() => instance.open(), [instance]);
   const close = useCallback(() => instance.close(), [instance]);
   const toggle = useCallback(() => instance.toggle(), [instance]);
+  const resetSession = useCallback(() => instance.resetSession(), [instance]);
 
   return {
     messages: state.messages,
@@ -62,5 +68,6 @@ export function useChatbot(): UseChatbotReturn {
     open,
     close,
     toggle,
+    resetSession,
   };
 }

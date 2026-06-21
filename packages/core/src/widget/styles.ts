@@ -95,13 +95,14 @@ export function buildStyles(primaryColor: string, theme: 'light' | 'dark' | 'aut
     }
     .ttcb-avatar svg { width: 16px; height: 16px; fill: ${primaryColor}; }
     .ttcb-header-title { font-weight: 600; font-size: 14px; color: var(--ttcb-text); flex: 1; }
-    .ttcb-close-btn {
+    .ttcb-close-btn, .ttcb-new-session-btn {
       background: none; border: none; cursor: pointer;
       color: var(--ttcb-text-muted); padding: 4px; border-radius: 6px;
       display: flex; align-items: center; justify-content: center;
     }
-    .ttcb-close-btn:hover { background: var(--ttcb-bg-secondary); }
+    .ttcb-close-btn:hover, .ttcb-new-session-btn:hover { background: var(--ttcb-bg-secondary); }
     .ttcb-close-btn svg { width: 18px; height: 18px; fill: currentColor; }
+    .ttcb-new-session-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
 
     .ttcb-messages {
       flex: 1; overflow-y: auto; padding: 16px;
@@ -148,6 +149,33 @@ export function buildStyles(primaryColor: string, theme: 'light' | 'dark' | 'aut
       color: var(--ttcb-user-text);
       border-radius: 16px 16px 4px 16px;
     }
+
+    /* Markdown styles inside AI bubble */
+    .ttcb-bubble p { margin: 0 0 6px 0; }
+    .ttcb-bubble p:last-child { margin-bottom: 0; }
+    .ttcb-bubble strong { font-weight: 600; }
+    .ttcb-bubble em { font-style: italic; }
+    .ttcb-bubble code {
+      background: rgba(0,0,0,0.08);
+      padding: 1px 5px; border-radius: 3px;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-size: 12px;
+    }
+    .ttcb-bubble pre {
+      background: rgba(0,0,0,0.08);
+      padding: 10px 12px; border-radius: 6px;
+      overflow-x: auto; margin: 6px 0;
+    }
+    .ttcb-bubble pre code { background: none; padding: 0; font-size: 12px; }
+    .ttcb-bubble h1, .ttcb-bubble h2, .ttcb-bubble h3 {
+      font-weight: 600; margin: 8px 0 4px; line-height: 1.3;
+    }
+    .ttcb-bubble h1 { font-size: 15px; }
+    .ttcb-bubble h2 { font-size: 14px; }
+    .ttcb-bubble h3 { font-size: 13px; }
+    .ttcb-bubble ul, .ttcb-bubble ol { padding-left: 18px; margin: 4px 0; }
+    .ttcb-bubble li { margin: 2px 0; }
+    .ttcb-bubble a { color: inherit; text-decoration: underline; }
 
     .ttcb-typing { display: flex; gap: 4px; padding: 8px 2px; align-items: center; }
     .ttcb-typing span {

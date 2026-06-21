@@ -61,6 +61,7 @@ export class ChatbotCore {
           this._state.isOpen = false;
           this.emitter.emit('close');
         },
+        onReset: () => this.resetSession(),
       });
     }
 
@@ -122,6 +123,15 @@ export class ChatbotCore {
 
   on<K extends keyof ChatbotEventMap>(event: K, listener: Listener<K>): () => void {
     return this.emitter.on(event, listener);
+  }
+
+  resetSession(): void {
+    const newId = this.session.reset();
+    this._state.sessionId = newId;
+    this._state.messages = [];
+    this._state.error = null;
+    this.widget?.clearMessages(this.options.chatbotName);
+    this.emitter.emit('session-reset');
   }
 
   open(): void { this.widget?.open(); }

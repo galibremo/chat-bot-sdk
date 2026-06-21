@@ -56,6 +56,7 @@ export type ChatbotEventMap = {
   open: void;
   close: void;
   error: Error;
+  'session-reset': void;
 };
 
 // ─── State ────────────────────────────────────────────────────────────────────

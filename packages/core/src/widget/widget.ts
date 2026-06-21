@@ -1,11 +1,12 @@
 import type { ChatMessage, ChatbotInitOptions } from '@typetechit/chatbot-types';
 import { buildStyles } from './styles';
-import { buildMessageEl, buildTypingIndicator, botIcon, chatIcon, closeIcon, sendIcon } from './render';
+import { buildMessageEl, buildTypingIndicator, botIcon, chatIcon, closeIcon, newSessionIcon, sendIcon } from './render';
 
 export interface WidgetCallbacks {
   onSend: (text: string) => void;
   onOpen: () => void;
   onClose: () => void;
+  onReset: () => void;
 }
 
 export class ChatWidget {
@@ -61,6 +62,13 @@ export class ChatWidget {
     const title = document.createElement('span');
     title.className = 'ttcb-header-title';
     title.textContent = options.chatbotName ?? 'AI Assistant';
+    const newSessionBtn = document.createElement('button');
+    newSessionBtn.className = 'ttcb-new-session-btn';
+    newSessionBtn.setAttribute('aria-label', 'New conversation');
+    newSessionBtn.title = 'New conversation';
+    newSessionBtn.innerHTML = newSessionIcon();
+    newSessionBtn.addEventListener('click', () => this.callbacks.onReset());
+
     const closeBtn = document.createElement('button');
     closeBtn.className = 'ttcb-close-btn';
     closeBtn.setAttribute('aria-label', 'Close chat');
@@ -68,6 +76,7 @@ export class ChatWidget {
     closeBtn.addEventListener('click', () => this.close());
     header.appendChild(avatar);
     header.appendChild(title);
+    header.appendChild(newSessionBtn);
     header.appendChild(closeBtn);
     this.panel.appendChild(header);
 
@@ -201,6 +210,11 @@ export class ChatWidget {
   toggle(): void {
     if (this.isOpen) this.close();
     else this.open();
+  }
+
+  clearMessages(name: string): void {
+    this.messagesContainer.innerHTML = '';
+    this.showEmptyState(name);
   }
 
   destroy(): void {
