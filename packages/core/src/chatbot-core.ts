@@ -14,7 +14,7 @@ type Listener<K extends keyof ChatbotEventMap> =
   ChatbotEventMap[K] extends void ? () => void : (payload: ChatbotEventMap[K]) => void;
 
 const DEFAULTS = {
-  apiBaseUrl: 'http://localhost:8080',
+  apiBaseUrl: 'https://api.chatbot.typetechit.com',
   chatbotName: 'AI Assistant',
   primaryColor: '#2563EB',
   theme: 'auto' as const,
