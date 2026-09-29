@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { DefaultWidgetDemo } from './demos/DefaultWidgetDemo';
-import { HeadlessDemo } from './demos/HeadlessDemo';
+import { DefaultWidgetDemo } from './demos/default-widget-demo';
+import { HeadlessDemo } from './demos/headless-demo';
 
 type Tab = 'widget' | 'headless';
 

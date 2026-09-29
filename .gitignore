@@ -6,3 +6,8 @@ dist/
 .env
 .superpowers
 graphify-out
+.DS_Store
+*.timestamp-*.mjs
+test-results/
+playwright-report/
+coverage/
