@@ -1,25 +1,25 @@
 {
-  "name": "onedesk-pro-chatbot-sdk",
-  "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "test": "turbo run test",
-    "dev": "turbo run dev",
-    "type-check": "turbo run type-check",
-    "clean": "turbo run clean",
-    "release:version": "pnpm -r --filter \"./packages/*\" exec npm version --no-git-tag-version",
-    "release": "pnpm -r --filter \"./packages/*\" publish --access public"
-  },
-  "devDependencies": {
-    "turbo": "^2.0.0",
-    "typescript": "^5.5.0",
-    "vitest": "^2"
-  },
-  "packageManager": "pnpm@9.0.0",
-  "description": "Embeddable chatbot SDK for Onedesk Pro",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/onedeskpro/onedeskpro-chatbot-sdk.git"
-  }
+	"name": "onedesk-pro-chatbot-sdk",
+	"private": true,
+	"scripts": {
+		"build": "turbo run build",
+		"test": "turbo run test",
+		"dev": "turbo run dev",
+		"type-check": "turbo run type-check",
+		"clean": "turbo run clean",
+		"release:version": "pnpm -r --filter \"./packages/*\" exec npm version --no-git-tag-version",
+		"release": "pnpm -r --filter \"./packages/*\" publish --access public"
+	},
+	"devDependencies": {
+		"turbo": "^2.0.0",
+		"typescript": "^6",
+		"vitest": "^5"
+	},
+	"packageManager": "pnpm@9.0.0",
+	"description": "Embeddable chatbot SDK for Onedesk Pro",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/onedeskpro/onedeskpro-chatbot-sdk.git"
+	}
 }
