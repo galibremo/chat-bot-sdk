@@ -1,5 +1,13 @@
 node_modules/
 dist/
 .turbo/
+.pnpm-store/
 *.local
 .env
+.superpowers
+graphify-out
+.DS_Store
+*.timestamp-*.mjs
+test-results/
+playwright-report/
+coverage/

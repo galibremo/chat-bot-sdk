@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, type ReactNode } from 'react';
-import { useChatbot } from './hooks/useChatbot';
+import { useChatbot } from './hooks/use-chatbot';
 import { useChatbotContext } from './context';
 
 /**

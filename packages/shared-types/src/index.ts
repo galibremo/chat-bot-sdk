@@ -10,6 +10,7 @@ export interface ChatbotInitOptions {
   welcomeMessage?: string;
   placeholder?: string;
   autoOpen?: boolean;
+  /** @deprecated Visitor tokens replace client session ids. Ignored when present. */
   sessionId?: string;
   /** Abort an API request that has not responded in this many ms. Defaults to 30000. */
   requestTimeoutMs?: number;
@@ -33,28 +34,54 @@ export interface ApiError {
   path: string;
 }
 
+export interface IdentifyRequest {
+  name: string;
+  phone: string;
+  email?: string;
+}
+
+export interface IdentifyResponseData {
+  visitorToken: string;
+}
+
+export interface VisitorVerifyResponse {
+  valid: boolean;
+  name: string | null;
+}
+
 export interface ChatRequest {
   chatInput: string;
-  sessionId?: string;
+  visitorToken: string;
 }
+
+/** Widget / bridge episode mode for AI vs human takeover. */
+export type ChatbotTicketMode = 'ai' | 'waiting' | 'human' | 'closed';
 
 export interface ChatResponseData {
   text: string;
   sessionId: string;
+  mode: ChatbotTicketMode;
+}
+
+/** Shared shape for `POST /sdk/human-request`, `GET /sdk/ticket-status`, and `ticket:status`. */
+export interface TicketStatusData {
+  mode: ChatbotTicketMode;
+  conversationId?: string;
+  agentName?: string;
 }
 
 export interface ChatMessage {
   id: number;
   sessionId: string;
   message: {
-    type: 'human' | 'ai';
+    type: 'human' | 'ai' | 'agent';
     content: string;
   };
 }
 
 // ─── Readiness ────────────────────────────────────────────────────────────────
 
-export type ChatbotBlockReason = 'no-prompt' | 'no-directories' | null;
+export type ChatbotBlockReason = 'no-prompt' | 'no-collections' | 'no-directories' | 'no-agent' | null;
 
 export interface SdkConfigResponse {
   agentId: string;
@@ -79,6 +106,10 @@ export type ChatbotEventMap = {
   error: Error;
   'session-reset': void;
   ready: void;
+  /** Fired after a successful `POST /sdk/human-request`. */
+  'human-requested': void;
+  /** Fired when ticket mode changes via REST restore or `/sdk` socket push. */
+  'ticket-status': TicketStatusData;
 };
 
 // ─── State ────────────────────────────────────────────────────────────────────
@@ -87,8 +118,12 @@ export interface ChatbotState {
   isOpen: boolean;
   isLoading: boolean;
   isReady: boolean;
+  needsIdentify: boolean;
   blockReason: ChatbotBlockReason;
   messages: ChatMessage[];
-  sessionId: string | null;
+  visitorToken: string | null;
+  visitorName: string | null;
   error: string | null;
+  /** Current ticket episode mode (`ai` until human takeover is wired in Task 6). */
+  mode: ChatbotTicketMode;
 }

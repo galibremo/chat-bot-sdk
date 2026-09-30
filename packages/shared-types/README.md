@@ -18,7 +18,7 @@ npm install --save-dev @onedeskpro/chatbot-types
 | `ChatbotState` | Snapshot of widget state. |
 | `ChatMessage` | A single human or AI message. |
 | `ChatbotEventMap` | Event names mapped to payloads, including `state-change`. |
-| `ChatbotBlockReason` | Why a bot is not ready (`'no-prompt' \| 'no-directories' \| null`). |
+| `ChatbotBlockReason` | Why a bot is not ready (`'no-prompt' \| 'no-collections' \| 'no-directories' \| 'no-agent' \| null`). |
 | `SdkConfigResponse` | Remote agent configuration and readiness. |
 | `ChatRequest` / `ChatResponseData` | Chat endpoint request and response bodies. |
 | `ApiResponse<T>` / `ApiError` | Onedesk Pro API envelopes. |

@@ -1,7 +1,12 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import type { ChatbotBlockReason, ChatMessage, ChatbotState } from '@onedeskpro/chatbot-types';
+import type {
+  ChatbotBlockReason,
+  ChatbotTicketMode,
+  ChatMessage,
+  ChatbotState,
+} from '@onedeskpro/chatbot-types';
 import { useChatbotContext } from '../context';
 
 export interface UseChatbotReturn {
@@ -9,10 +14,19 @@ export interface UseChatbotReturn {
   isOpen: boolean;
   isLoading: boolean;
   isReady: boolean;
+  needsIdentify: boolean;
   blockReason: ChatbotBlockReason;
   error: string | null;
+  visitorToken: string | null;
+  visitorName: string | null;
+  /** Ticket episode mode: ai | waiting | human | closed. */
+  mode: ChatbotTicketMode;
+  /** @deprecated Use visitorToken. */
   sessionId: string | null;
   sendMessage: (text: string) => Promise<void>;
+  submitIdentify: (payload: { name: string; phone: string; email?: string }) => Promise<void>;
+  /** Escalate the open AI ticket to a human agent (no-op unless mode is `ai`). */
+  requestHuman: () => Promise<void>;
   open: () => void;
   close: () => void;
   toggle: () => void;
@@ -41,6 +55,12 @@ export function useChatbot(): UseChatbotReturn {
     (text: string) => instance.sendMessage(text),
     [instance],
   );
+  const submitIdentify = useCallback(
+    (payload: { name: string; phone: string; email?: string }) =>
+      instance.submitIdentify(payload),
+    [instance],
+  );
+  const requestHuman = useCallback(() => instance.requestHuman(), [instance]);
   const open = useCallback(() => instance.open(), [instance]);
   const close = useCallback(() => instance.close(), [instance]);
   const toggle = useCallback(() => instance.toggle(), [instance]);
@@ -51,10 +71,16 @@ export function useChatbot(): UseChatbotReturn {
     isOpen: state.isOpen,
     isLoading: state.isLoading,
     isReady: state.isReady,
+    needsIdentify: state.needsIdentify,
     blockReason: state.blockReason,
     error: state.error,
-    sessionId: state.sessionId,
+    visitorToken: state.visitorToken,
+    visitorName: state.visitorName,
+    mode: state.mode,
+    sessionId: state.visitorToken,
     sendMessage,
+    submitIdentify,
+    requestHuman,
     open,
     close,
     toggle,

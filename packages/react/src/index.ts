@@ -1,11 +1,11 @@
-export { ChatbotProvider } from './ChatbotProvider';
-export type { ChatbotProviderProps } from './ChatbotProvider';
+export { ChatbotProvider } from './chatbot-provider';
+export type { ChatbotProviderProps } from './chatbot-provider';
 
-export { ChatbotWidget, ChatbotHeadless } from './ChatbotWidget';
-export type { ChatbotHeadlessProps } from './ChatbotWidget';
+export { ChatbotWidget, ChatbotHeadless } from './chatbot-widget';
+export type { ChatbotHeadlessProps } from './chatbot-widget';
 
-export { useChatbot } from './hooks/useChatbot';
-export type { UseChatbotReturn } from './hooks/useChatbot';
+export { useChatbot } from './hooks/use-chatbot';
+export type { UseChatbotReturn } from './hooks/use-chatbot';
 
 export { ChatbotContext } from './context';
 
@@ -15,4 +15,6 @@ export type {
   ChatbotState,
   ChatMessage,
   ChatbotEventMap,
+  ChatbotTicketMode,
+  TicketStatusData,
 } from '@onedeskpro/chatbot-types';

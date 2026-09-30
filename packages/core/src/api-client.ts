@@ -1,10 +1,13 @@
 import type {
   ApiError,
   ApiResponse,
-  ChatMessage,
   ChatRequest,
   ChatResponseData,
+  IdentifyRequest,
+  IdentifyResponseData,
   SdkConfigResponse,
+  TicketStatusData,
+  VisitorVerifyResponse,
 } from '@onedeskpro/chatbot-types';
 
 interface ApiClientOptions {
@@ -27,6 +30,16 @@ function isApiError(value: unknown): value is ApiError {
     typeof value === 'object' &&
     value !== null &&
     typeof (value as ApiError).message === 'string'
+  );
+}
+
+export function isChatbotRequestError(error: unknown): error is ChatbotRequestError {
+  return (
+    error instanceof Error &&
+    'apiError' in error &&
+    'status' in error &&
+    typeof (error as ChatbotRequestError).status === 'number' &&
+    isApiError((error as ChatbotRequestError).apiError)
   );
 }
 
@@ -57,6 +70,7 @@ export class ApiClient {
     path: string,
     body?: unknown,
     params?: Record<string, string>,
+    extraHeaders?: Record<string, string>,
   ): Promise<T> {
     const url = new URL(`${this.baseUrl}${path}`);
     if (params) {
@@ -68,6 +82,7 @@ export class ApiClient {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'X-API-Key': this.apiKey,
+      ...extraHeaders,
     };
 
     // Without this, a request that never resolves leaves the widget stuck in its
@@ -137,15 +152,31 @@ export class ApiClient {
     return (payload as ApiResponse<T>).data;
   }
 
+  async identify(payload: IdentifyRequest): Promise<IdentifyResponseData> {
+    return this.request<IdentifyResponseData>('POST', '/sdk/identify', payload);
+  }
+
+  async verifyVisitor(visitorToken: string): Promise<VisitorVerifyResponse> {
+    return this.request<VisitorVerifyResponse>('GET', '/sdk/visitor', undefined, undefined, {
+      'X-Visitor-Token': visitorToken,
+    });
+  }
+
   async sendMessage(payload: ChatRequest): Promise<ChatResponseData> {
     return this.request<ChatResponseData>('POST', '/sdk/chat', payload);
   }
 
-  async fetchHistory(sessionId: string): Promise<ChatMessage[]> {
-    return this.request<ChatMessage[]>('GET', '/sdk/chat-history', undefined, { sessionId });
-  }
-
   async fetchConfig(): Promise<SdkConfigResponse> {
     return this.request<SdkConfigResponse>('GET', '/sdk/config');
+  }
+
+  async requestHuman(visitorToken: string): Promise<TicketStatusData> {
+    return this.request<TicketStatusData>('POST', '/sdk/human-request', { visitorToken });
+  }
+
+  async fetchTicketStatus(visitorToken: string): Promise<TicketStatusData> {
+    return this.request<TicketStatusData>('GET', '/sdk/ticket-status', undefined, undefined, {
+      'X-Visitor-Token': visitorToken,
+    });
   }
 }

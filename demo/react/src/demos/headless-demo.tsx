@@ -10,6 +10,7 @@ function CustomChat() {
   const { messages, sendMessage, isLoading, error } = useChatbot();
   const [input, setInput] = React.useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -19,7 +20,10 @@ function CustomChat() {
     const text = input.trim();
     if (!text || isLoading) return;
     setInput("");
+    // Keep focus so the user can type the next message while waiting.
+    inputRef.current?.focus();
     await sendMessage(text);
+    inputRef.current?.focus();
   };
 
   return (
@@ -122,6 +126,7 @@ function CustomChat() {
         }}
       >
         <input
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -131,7 +136,6 @@ function CustomChat() {
             }
           }}
           placeholder="Type a message…"
-          disabled={isLoading}
           style={{
             flex: 1,
             border: "1px solid var(--gray-200)",
@@ -139,7 +143,7 @@ function CustomChat() {
             padding: "10px 18px",
             fontSize: 14,
             outline: "none",
-            background: isLoading ? "var(--gray-50)" : "#fff",
+            background: "#fff",
             color: "var(--gray-900)",
             transition: "border-color 0.15s",
           }}

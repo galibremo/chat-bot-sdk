@@ -1,4 +1,4 @@
-const SESSION_KEY = 'onedeskpro_chatbot_session_id';
+const TOKEN_KEY_PREFIX = 'onedeskpro_visitor_token';
 
 /**
  * `typeof window !== 'undefined'` is not enough to reach localStorage safely:
@@ -19,48 +19,44 @@ function writeStored(key: string, value: string): void {
   try {
     if (typeof window !== 'undefined') window.localStorage.setItem(key, value);
   } catch {
-    // Storage unavailable or full — the session lives in memory for this page.
+    // Storage unavailable or full — the token lives in memory for this page.
   }
 }
 
-export class SessionManager {
-  private sessionId: string | null = null;
+function removeStored(key: string): void {
+  try {
+    if (typeof window !== 'undefined') window.localStorage.removeItem(key);
+  } catch {
+    // Ignore storage failures.
+  }
+}
 
-  init(providedSessionId?: string): string {
-    if (providedSessionId) {
-      this.sessionId = providedSessionId;
-      this.persist();
-      return this.sessionId;
-    }
+export class VisitorTokenManager {
+  private token: string | null = null;
+  private storageKey = TOKEN_KEY_PREFIX;
 
-    const stored = readStored(SESSION_KEY);
-    if (stored) {
-      this.sessionId = stored;
-    } else {
-      this.sessionId = this.generateId();
-      this.persist();
-    }
-
-    return this.sessionId;
+  /** Scope the token to an agent so multiple widgets on one origin stay isolated. */
+  setScope(agentId: string | null | undefined): void {
+    this.storageKey = agentId?.trim()
+      ? `${TOKEN_KEY_PREFIX}:${agentId.trim()}`
+      : TOKEN_KEY_PREFIX;
+    this.token = readStored(this.storageKey);
   }
 
   get(): string | null {
-    return this.sessionId;
+    return this.token ?? readStored(this.storageKey);
   }
 
-  reset(): string {
-    this.sessionId = this.generateId();
-    this.persist();
-    return this.sessionId;
+  set(token: string): void {
+    this.token = token;
+    writeStored(this.storageKey, token);
   }
 
-  private persist(): void {
-    if (this.sessionId) writeStored(SESSION_KEY, this.sessionId);
-  }
-
-  private generateId(): string {
-    return typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : Math.random().toString(36).slice(2) + Date.now().toString(36);
+  clear(): void {
+    this.token = null;
+    removeStored(this.storageKey);
   }
 }
+
+/** @deprecated Use VisitorTokenManager. Kept for import compatibility. */
+export { VisitorTokenManager as SessionManager };
